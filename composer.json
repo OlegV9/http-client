@@ -7,8 +7,5 @@
             "name": "Oleg V",
             "email": "olegv@semalt.com"
         }
-    ],
-    "autoload": {
-		"psr-0": {"HttpClient": "."}
-	}
+    ]
 }
