@@ -1,0 +1,13 @@
+{
+    "name": "semalt/http_client",
+    "description": "Simple cURL wrapper",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Oleg V",
+            "email": "olegv@semalt.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
