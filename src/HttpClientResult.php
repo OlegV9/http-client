@@ -15,6 +15,10 @@ class HttpClientResult {
 		$this->info = $info;
 	}
 
+	public function test() {
+		return 'ok';
+	}
+
 	public function getText() : string {
 		return $this->response;
 	}
