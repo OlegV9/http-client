@@ -8,5 +8,7 @@
             "email": "olegv@semalt.com"
         }
     ],
-    "require": {}
+    "autoload": {
+		"psr-0": {"HttpClient": "."}
+	}
 }
