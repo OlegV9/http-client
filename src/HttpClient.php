@@ -103,6 +103,10 @@ class HttpClient {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $headersList);
 		}
 
+		if (!empty($opts['curlOpts'])) {
+			curl_setopt_array($ch, $opts['curlOpts']);
+		}
+
 		$response = curl_exec($ch);
 		$error = curl_error($ch);
 		$info = curl_getinfo($ch);
