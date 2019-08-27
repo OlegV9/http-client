@@ -36,14 +36,14 @@ class HttpClientResult {
 	}
 
 	public function getError() : string {
-		return $this->error;
+		return $this->error ?? '';
 	}
 
 	public function getAllHeaders() : array {
 		return $this->headers;
 	}
 
-	public function getHeader(string $key) : string {
+	public function getHeader(string $key) : ?string {
 		$key = mb_strtolower($key);
 		foreach ($this->headers as $header) {
 			if ($header['key'] === $key) return $header['val'];
@@ -52,7 +52,7 @@ class HttpClientResult {
 		return null;
 	}
 
-	public function getUrl() : string {
+	public function getUrl() : ?string {
 		return $this->info['url'];
 	}
 
