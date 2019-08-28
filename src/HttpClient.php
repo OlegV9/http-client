@@ -37,6 +37,49 @@ class HttpClient {
 		$this->defaultOpts[$key] = $val;
 	}
 
+	public function multiGet($requests, $opts = []) {
+		$multi = curl_multi_init();
+		$channels = [];
+		foreach ($requests as $req) {
+			if (is_array($req)) {
+				$url = $req['url'];
+			} else {
+				$url = $req;
+			}
+
+			$ch = curl_init($url);
+			$curlOpts = $this->getCurlOpts('GET', null, $opts);
+			curl_multi_add_handle($multi, $ch);
+			$channels[] = $ch;
+		}
+
+		$active = null;
+		do {
+			$mrc = curl_multi_exec($multi, $active);
+		} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+		while ($active && $mrc == CURLM_OK) {
+			if (curl_multi_select($multi) == -1) continue;
+			do {
+				$mrc = curl_multi_exec($multi, $active);
+			} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+		}
+
+		$results = [];
+		foreach ($channels as $date => $channel) {
+			$response = curl_multi_getcontent($channel);
+			curl_multi_remove_handle($multi, $channel);
+			curl_close($channel);
+
+			$result = new HttpClientResult($response, $headers, null, null);
+			$results[] = $result;
+		}
+
+		curl_multi_close($multi);
+
+		return $results;
+	}
+
 	private function makeRequest($method, $url, $postData = null, $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 		$headers = [];
@@ -59,13 +102,28 @@ class HttpClient {
 		$reqHeaders = [];
 
 		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADERFUNCTION, $readHeaders);
+
+		$curlOpts = $this->getCurlOpts($method, $postData, $opts);
+		curl_setopt_array($ch, $curlOpts);
+
+		$response = curl_exec($ch);
+		$error = curl_error($ch);
+		$info = curl_getinfo($ch);
+		curl_close($ch);
+
+		return new HttpClientResult($response, $headers, $info, $error);
+	}
+
+	private function getCurlOpts($method, $postData, $opts) {
+		$curlOpts = [];
+
+		$curlOpts[CURLOPT_CUSTOMREQUEST] = $method;
+		$curlOpts[CURLOPT_RETURNTRANSFER] = true;
+		$curlOpts[CURLOPT_HEADERFUNCTION] = $readHeaders;
 
 		if ($postData) {
 			$postData = $this->transformPostData($postData, $opts['type']);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+			$curlOpts[CURLOPT_POSTFIELDS] = $postData;
 
 			if ($opts['type'] === 'json') {
 				$reqHeaders['content-type'] = 'application/json';
@@ -73,20 +131,20 @@ class HttpClient {
 		}
 
 		if (!empty($opts['ignoreSslErrors'])) {
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			$curlOpts[CURLOPT_SSL_VERIFYHOST] = 0;
+			$curlOpts[CURLOPT_SSL_VERIFYPEER] = 0;
 		}
 		if (isset($opts['maxRedirects'])) {
-			curl_setopt($ch, CURLOPT_MAXREDIRS, intval($opts['maxRedirects']));
+			$curlOpts[CURLOPT_MAXREDIRS] = intval($opts['maxRedirects']);
 		}
 		if (!empty($opts['followRedirects'])) {
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			$curlOpts[CURLOPT_FOLLOWLOCATION] = true;
 		}
 		if (isset($opts['timeout'])) {
-			curl_setopt($ch, CURLOPT_TIMEOUT, $opts['timeout']);
+			$curlOpts[CURLOPT_TIMEOUT] = $opts['timeout'];
 		}
 		if (isset($opts['auth'])) {
-			curl_setopt($ch, CURLOPT_USERPWD, $opts['auth']);
+			$curlOpts[CURLOPT_USERPWD] = $opts['auth'];
 		}
 		if (!empty($opts['headers'])) {
 			foreach ($opts['headers'] as $key => $val) {
@@ -100,19 +158,16 @@ class HttpClient {
 			foreach ($reqHeaders as $key => $val) {
 				$headersList[] = $key.': '.$val;
 			}
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $headersList);
+			$curlOpts[CURLOPT_HTTPHEADER] = $headersList;
 		}
 
 		if (!empty($opts['curlOpts'])) {
-			curl_setopt_array($ch, $opts['curlOpts']);
+			foreach ($opts['curlOpts'] as $key => $val) {
+				$curlOpts[$key] = $val;
+			}
 		}
 
-		$response = curl_exec($ch);
-		$error = curl_error($ch);
-		$info = curl_getinfo($ch);
-		curl_close($ch);
-
-		return new HttpClientResult($response, $headers, $info, $error);
+		return $curlOpts;
 	}
 
 	private function transformPostData($data, $type) {
