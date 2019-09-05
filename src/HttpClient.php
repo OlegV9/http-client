@@ -38,19 +38,37 @@ class HttpClient {
 	}
 
 	public function multiGet($requests, $opts = []) {
+		$opts = array_merge($this->defaultOpts, $opts);
+
 		$multi = curl_multi_init();
 		$channels = [];
+
+		$headersMap = [];
+
+		$i = 0;
 		foreach ($requests as $req) {
 			if (is_array($req)) {
 				$url = $req['url'];
+				if (!empty($req['opts'])) {
+					foreach ($req['opts'] as $key => $val) {
+						$opts[$key] = $val;
+					}
+				}
 			} else {
 				$url = $req;
 			}
 
+			$headersMap[$i] = [];
+
 			$ch = curl_init($url);
-			$curlOpts = $this->getCurlOpts('GET', null, $opts);
+			$curlOpts = $this->getCurlOpts('GET', null, $opts, function($ch, $header) use (&$headersMap, $i) {
+				return $this->readHeaders($ch, $header, $headersMap[$i]);
+			});
+			curl_setopt_array($ch, $curlOpts);
 			curl_multi_add_handle($multi, $ch);
 			$channels[] = $ch;
+
+			$i++;
 		}
 
 		$active = null;
@@ -66,12 +84,14 @@ class HttpClient {
 		}
 
 		$results = [];
-		foreach ($channels as $date => $channel) {
-			$response = curl_multi_getcontent($channel);
-			curl_multi_remove_handle($multi, $channel);
-			curl_close($channel);
+		foreach ($channels as $i => $ch) {
+			$response = curl_multi_getcontent($ch);
+			curl_multi_remove_handle($multi, $ch);
+			$error = curl_error($ch);
+			$info = curl_getinfo($ch);
+			curl_close($ch);
 
-			$result = new HttpClientResult($response, $headers, null, null);
+			$result = new HttpClientResult($response, $headersMap[$i], $info, $error);
 			$results[] = $result;
 		}
 
@@ -80,30 +100,40 @@ class HttpClient {
 		return $results;
 	}
 
+	private function readHeaders($ch, $header, &$headers) {
+		$len = strlen($header);
+		$parts = explode(':', $header, 2);
+
+		if (trim($header) === '') return $len;
+
+		if (count($parts) < 2) {
+			$headers = [];
+			return $len;
+		}
+
+		list($key, $val) = $parts;
+
+		$headers[] = [
+			'key' => mb_strtolower(trim($key)),
+			'val' => trim($val)
+		];
+
+		return $len;
+	}
+
 	private function makeRequest($method, $url, $postData = null, $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
+
 		$headers = [];
-
 		$readHeaders = function($ch, $header) use (&$headers) {
-			$len = strlen($header);
-			$parts = explode(':', $header, 2);
-			if (count($parts) < 2) return $len;
-
-			list($key, $val) = $parts;
-
-			$headers[] = [
-				'key' => mb_strtolower(trim($key)),
-				'val' => trim($val)
-			];
-
-			return $len;
+			return $this->readHeaders($ch, $header, $headers);
 		};
 
 		$reqHeaders = [];
 
 		$ch = curl_init($url);
 
-		$curlOpts = $this->getCurlOpts($method, $postData, $opts);
+		$curlOpts = $this->getCurlOpts($method, $postData, $opts, $readHeaders);
 		curl_setopt_array($ch, $curlOpts);
 
 		$response = curl_exec($ch);
@@ -114,12 +144,14 @@ class HttpClient {
 		return new HttpClientResult($response, $headers, $info, $error);
 	}
 
-	private function getCurlOpts($method, $postData, $opts) {
+	private function getCurlOpts($method, $postData, $opts, callable $readHeaders = null) {
 		$curlOpts = [];
 
 		$curlOpts[CURLOPT_CUSTOMREQUEST] = $method;
 		$curlOpts[CURLOPT_RETURNTRANSFER] = true;
-		$curlOpts[CURLOPT_HEADERFUNCTION] = $readHeaders;
+		if ($readHeaders) {
+			$curlOpts[CURLOPT_HEADERFUNCTION] = $readHeaders;
+		}
 
 		if ($postData) {
 			$postData = $this->transformPostData($postData, $opts['type']);
@@ -148,7 +180,7 @@ class HttpClient {
 		}
 		if (!empty($opts['headers'])) {
 			foreach ($opts['headers'] as $key => $val) {
-				$header = strtolower($key);
+				$header = mb_strtolower($key);
 				$reqHeaders[$header] = $val;
 			}
 		}
