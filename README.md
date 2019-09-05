@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "dev-master#v1.2"
+        "semalt/http-client": "dev-master#v1.3"
     }
 }
 
