@@ -4,7 +4,7 @@ namespace HttpClient;
 
 class HttpClient {
 	private $defaultOpts = [
-		'type' => 'form',
+		'type' => 'urlencoded',
 		'followRedirects' => true,
 		'maxRedirects' => 10,
 		'ignoreSslErrors' => false,
@@ -203,8 +203,17 @@ class HttpClient {
 	}
 
 	private function transformPostData($data, $type) {
-		if ($type === 'json') return json_encode($data, JSON_UNESCAPED_UNICODE);
-		if ($type === 'form') return http_build_query($data);
+		switch ($type) {
+			case 'json':
+				return json_encode($data, JSON_UNESCAPED_UNICODE);
+
+			case 'form':
+			case 'urlencoded':
+				return http_build_query($data);
+
+			case 'multipart':
+				return $data;
+		}
 		return $data;
 	}
 }
