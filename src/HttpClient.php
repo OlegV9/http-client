@@ -121,7 +121,7 @@ class HttpClient {
 		return $len;
 	}
 
-	private function makeRequest($method, $url, $postData = null, $opts = []) {
+	public function makeRequest($method, $url, $postData = null, $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 
 		$headers = [];
