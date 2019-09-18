@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "dev-master#v1.3.1"
+        "semalt/http-client": "v1.3.1"
     }
 }
 
