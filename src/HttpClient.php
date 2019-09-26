@@ -41,12 +41,11 @@ class HttpClient {
 		$opts = array_merge($this->defaultOpts, $opts);
 
 		$multi = curl_multi_init();
-		$channels = [];
 
 		$headersMap = [];
+		$channels = [];
 
-		$i = 0;
-		foreach ($requests as $req) {
+		foreach ($requests as $index => $req) {
 			if (is_array($req)) {
 				$url = $req['url'];
 				if (!empty($req['opts'])) {
@@ -58,17 +57,15 @@ class HttpClient {
 				$url = $req;
 			}
 
-			$headersMap[$i] = [];
+			$headersMap[$index] = [];
 
 			$ch = curl_init($url);
-			$curlOpts = $this->getCurlOpts('GET', null, $opts, function($ch, $header) use (&$headersMap, $i) {
-				return $this->readHeaders($ch, $header, $headersMap[$i]);
+			$curlOpts = $this->getCurlOpts('GET', null, $opts, function($ch, $header) use (&$headersMap, $index) {
+				return $this->readHeaders($ch, $header, $headersMap[$index]);
 			});
 			curl_setopt_array($ch, $curlOpts);
 			curl_multi_add_handle($multi, $ch);
-			$channels[] = $ch;
-
-			$i++;
+			$channels[$index] = $ch;
 		}
 
 		$active = null;
@@ -84,15 +81,15 @@ class HttpClient {
 		}
 
 		$results = [];
-		foreach ($channels as $i => $ch) {
+		foreach ($channels as $index => $ch) {
 			$response = curl_multi_getcontent($ch);
 			curl_multi_remove_handle($multi, $ch);
 			$error = curl_error($ch);
 			$info = curl_getinfo($ch);
 			curl_close($ch);
 
-			$result = new HttpClientResult($response, $headersMap[$i], $info, $error);
-			$results[] = $result;
+			$result = new HttpClientResult($response, $headersMap[$index], $info, $error);
+			$results[$index] = $result;
 		}
 
 		curl_multi_close($multi);
