@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "dev-master#v1.4"
+        "semalt/http-client": "v1.4"
     }
 }
 
@@ -82,7 +82,7 @@ $allHeaders = $res->getAllHeaders();
  - **followRedirects** - нужно ли делать перенаправления. По умолчанию - true
  - **maxRedirects** - макс. количество перенаправлений. По умолчанию - 10
  - **ignoreSslErrors** - игнорить поломаный SSL. По умолчанию - false
- - **timeout** - таймаунт в сек. По умолчанию - 40
+ - **timeout** - таймаут в сек. По умолчанию - 40
  - **auth** - basic-авторизация в формате "login:password"
  - **headers** - ассоц. массив заголовков (см. пример ниже)
  - **curlOpts** - сырые опции для curl'а
