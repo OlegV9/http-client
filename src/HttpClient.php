@@ -37,7 +37,7 @@ class HttpClient {
 		$this->defaultOpts[$key] = $val;
 	}
 
-	public function multiRequest($method, $requests, $data = [], $opts = []) {
+	public function multiRequest($defaultMethod, $requests, $defaultData = [], $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 
 		$multi = curl_multi_init();
@@ -46,8 +46,17 @@ class HttpClient {
 		$channels = [];
 
 		foreach ($requests as $index => $req) {
+			$method = $defaultMethod;
+			$data = $defaultData;
+
 			if (is_array($req)) {
 				$url = $req['url'];
+				if (!empty($req['method'])) {
+					$method = $req['method'];
+				}
+				if (isset($req['data'])) {
+					$data = $req['data'];
+				}
 				if (!empty($req['opts'])) {
 					foreach ($req['opts'] as $key => $val) {
 						$opts[$key] = $val;
@@ -148,7 +157,7 @@ class HttpClient {
 	private function getCurlOpts($method, $postData, $opts, callable $readHeaders = null) {
 		$curlOpts = [];
 
-		$curlOpts[CURLOPT_CUSTOMREQUEST] = $method;
+		$curlOpts[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
 		$curlOpts[CURLOPT_RETURNTRANSFER] = true;
 		if ($readHeaders) {
 			$curlOpts[CURLOPT_HEADERFUNCTION] = $readHeaders;

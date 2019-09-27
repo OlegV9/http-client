@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "v1.5"
+        "semalt/http-client": "v1.5.1"
     }
 }
 
@@ -141,12 +141,14 @@ foreach ($results as $res) {
 ```php
 $urls = [
     'http://example.com',
-    'http://example.com/page',
+    'http://example.com/send',
     [
+        'method' => 'POST',
         'url' => 'http://example.net',
+        'data' => ['a' => 123],
         'opts' => ['timeout' => 20]
     ],
     'http://example.org'
 ];
-$http->multiGet($urls);
+$http->multiRequest('GET', $urls);
 ```
