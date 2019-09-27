@@ -37,7 +37,7 @@ class HttpClient {
 		$this->defaultOpts[$key] = $val;
 	}
 
-	public function multiGet($requests, $opts = []) {
+	public function multiRequest($method, $requests, $data = [], $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 
 		$multi = curl_multi_init();
@@ -60,7 +60,7 @@ class HttpClient {
 			$headersMap[$index] = [];
 
 			$ch = curl_init($url);
-			$curlOpts = $this->getCurlOpts('GET', null, $opts, function($ch, $header) use (&$headersMap, $index) {
+			$curlOpts = $this->getCurlOpts($method, $data, $opts, function($ch, $header) use (&$headersMap, $index) {
 				return $this->readHeaders($ch, $header, $headersMap[$index]);
 			});
 			curl_setopt_array($ch, $curlOpts);
@@ -95,6 +95,10 @@ class HttpClient {
 		curl_multi_close($multi);
 
 		return $results;
+	}
+
+	public function multiGet($requests, $opts = []) {
+		return $this->multiRequest('GET', $requests, null, $opts);
 	}
 
 	private function readHeaders($ch, $header, &$headers) {

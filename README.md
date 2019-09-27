@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "v1.4"
+        "semalt/http-client": "v1.5"
     }
 }
 
@@ -70,6 +70,9 @@ $header = $res->getHeader('Content-Type');
 
 //Массив всех заголовков ответа
 $allHeaders = $res->getAllHeaders();
+
+//время запроса
+$time = $res->time();
 ```
 
 ### Опции
@@ -125,6 +128,8 @@ $urls = [
 
 $opts = ['timeout' => 10];
 $results = $http->multiGet($urls, $opts);
+//или
+//$results = $http->multiRequest('POST', $urls, $postData, $opts);
 
 foreach ($results as $res) {
     echo $res->text();	//текст ответа. Доступные также все методы, описанные выше

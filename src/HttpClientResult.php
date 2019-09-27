@@ -56,6 +56,10 @@ class HttpClientResult {
 		return $this->info['url'];
 	}
 
+	public function getTime() : float {
+		return $this->info['total_time'] ?? null;
+	}
+
 	/* aliases */
 
 	public function text() : string {
@@ -72,5 +76,9 @@ class HttpClientResult {
 
 	public function error() : string {
 		return $this->getError();
+	}
+
+	public function time() : float {
+		return $this->getTime();
 	}
 }
