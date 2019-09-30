@@ -37,6 +37,7 @@ class HttpClient {
 		$this->defaultOpts[$key] = $val;
 	}
 
+	/** @return HttpClientResult[] */
 	public function multiRequest($defaultMethod, $requests, $defaultData = [], $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 
@@ -106,6 +107,7 @@ class HttpClient {
 		return $results;
 	}
 
+	/** @return HttpClientResult[] */
 	public function multiGet($requests, $opts = []) {
 		return $this->multiRequest('GET', $requests, null, $opts);
 	}
