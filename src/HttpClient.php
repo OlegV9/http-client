@@ -151,6 +151,7 @@ class HttpClient {
 		$response = curl_exec($ch);
 		$error = curl_error($ch);
 		$info = curl_getinfo($ch);
+		
 		curl_close($ch);
 
 		return new HttpClientResult($response, $headers, $info, $error);

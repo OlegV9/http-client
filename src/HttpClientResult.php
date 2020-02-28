@@ -56,6 +56,10 @@ class HttpClientResult {
 		return $this->info['url'];
 	}
 
+	public function getRedirectUrl() : ?string {
+		return $this->info['redirect_url'];
+	}
+
 	public function getTime() : float {
 		return $this->info['total_time'] ?? null;
 	}
