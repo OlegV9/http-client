@@ -11,13 +11,13 @@
         }
     ],
     "require": {
-        "semalt/http-client": "v1.5.1"
+        "semalt/http-client": "v1.5.2"
     }
 }
 
 ```
 
-и потом сделать `composer update`
+и потом сделать `composer update semalt/http-client`
 
 ## Использование
 
