@@ -23,7 +23,7 @@ class HttpClientResult {
 		return json_decode($this->response, $assoc);
 	}
 
-	public function toFile($path) {
+	public function toFile($path) : bool {
 		if (file_exists($path)) {
 			unlink($path);
 		}
@@ -72,6 +72,10 @@ class HttpClientResult {
 
 	public function json($assoc = false) {
 		return $this->fromJson($assoc);
+	}
+
+	public function save($path) : bool {
+		return $this->toFile($path);
 	}
 
 	public function code() : int {
