@@ -1,8 +1,8 @@
 <?php
 
-namespace HttpClient;
+namespace Semalt\HttpClient;
 
-class HttpClientResult {
+class Result {
 	private $response = '';
 	private $error = '';
 	private $headers;

@@ -1,6 +1,6 @@
 <?php
 
-namespace HttpClient;
+namespace Semalt;
 
 class HttpClient {
 	private $defaultOpts = [
@@ -37,7 +37,7 @@ class HttpClient {
 		$this->defaultOpts[$key] = $val;
 	}
 
-	/** @return HttpClientResult[] */
+	/** @return HttpClient\Result[] */
 	public function multiRequest($defaultMethod, $requests, $defaultData = [], $opts = []) {
 		$opts = array_merge($this->defaultOpts, $opts);
 
@@ -98,7 +98,7 @@ class HttpClient {
 			$info = curl_getinfo($ch);
 			curl_close($ch);
 
-			$result = new HttpClientResult($response, $headersMap[$index], $info, $error);
+			$result = new HttpClient\Result($response, $headersMap[$index], $info, $error);
 			$results[$index] = $result;
 		}
 
@@ -107,7 +107,7 @@ class HttpClient {
 		return $results;
 	}
 
-	/** @return HttpClientResult[] */
+	/** @return HttpClient\Result[] */
 	public function multiGet($requests, $opts = []) {
 		return $this->multiRequest('GET', $requests, null, $opts);
 	}
@@ -154,7 +154,7 @@ class HttpClient {
 
 		curl_close($ch);
 
-		return new HttpClientResult($response, $headers, $info, $error);
+		return new HttpClient\Result($response, $headers, $info, $error);
 	}
 
 	private function getCurlOpts($method, $postData, $opts, callable $readHeaders = null) {

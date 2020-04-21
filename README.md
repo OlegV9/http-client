@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "1.5.3"
+        "semalt/http-client": "2.0.0"
     }
 }
 
@@ -24,7 +24,7 @@
 ### Подключение:
 
 ```php
-use \HttpClient\HttpClient;
+use Semalt\HttpClient;
 
 $http = new HttpClient();
 ```
