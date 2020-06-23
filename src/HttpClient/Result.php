@@ -14,6 +14,10 @@ class Result {
 		$this->headers = $headers;
 		$this->info = $info;
 	}
+	
+	public function getRawInfo() {
+		return $this->info;
+	}
 
 	public function getText() : string {
 		return $this->response;
