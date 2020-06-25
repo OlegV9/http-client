@@ -19,7 +19,7 @@ class Result {
 		return $this->info;
 	}
 
-	public function getText() : string {
+	public function getText() {
 		return $this->response;
 	}
 
@@ -27,7 +27,7 @@ class Result {
 		return json_decode($this->response, $assoc);
 	}
 
-	public function toFile($path) : bool {
+	public function toFile($path) {
 		if (file_exists($path)) {
 			unlink($path);
 		}
@@ -35,20 +35,20 @@ class Result {
 		return $ok;
 	}
 
-	public function getCode() : int {
-		return $this->info['http_code'] ?? 0;
+	public function getCode() {
+		return $this->info['http_code'];
 	}
 
-	public function getError() : string {
-		return $this->error ?? '';
+	public function getError() {
+		return isset($this->error) ? $this->error : '';
 	}
 
-	public function getAllHeaders() : array {
+	public function getAllHeaders() {
 		return $this->headers;
 	}
 
-	public function getHeader(string $key) : ?string {
-		$key = mb_strtolower($key);
+	public function getHeader(string $key) {
+		$key = strtolower($key);
 		foreach ($this->headers as $header) {
 			if ($header['key'] === $key) return $header['val'];
 		}
@@ -56,21 +56,21 @@ class Result {
 		return null;
 	}
 
-	public function getUrl() : ?string {
+	public function getUrl() {
 		return $this->info['url'];
 	}
 
-	public function getRedirectUrl() : ?string {
+	public function getRedirectUrl() {
 		return $this->info['redirect_url'];
 	}
 
-	public function getTime() : float {
-		return $this->info['total_time'] ?? null;
+	public function getTime() {
+		return isset($this->info['total_time']) ? $this->info['total_time'] : null;
 	}
 
 	/* aliases */
 
-	public function text() : string {
+	public function text() {
 		return $this->getText();
 	}
 
@@ -78,19 +78,19 @@ class Result {
 		return $this->fromJson($assoc);
 	}
 
-	public function save($path) : bool {
+	public function save($path) {
 		return $this->toFile($path);
 	}
 
-	public function code() : int {
+	public function code() {
 		return $this->getCode();
 	}
 
-	public function error() : string {
+	public function error() {
 		return $this->getError();
 	}
 
-	public function time() : float {
+	public function time() {
 		return $this->getTime();
 	}
 }

@@ -126,7 +126,7 @@ class HttpClient {
 		list($key, $val) = $parts;
 
 		$headers[] = [
-			'key' => mb_strtolower(trim($key)),
+			'key' => strtolower(trim($key)),
 			'val' => trim($val)
 		];
 
@@ -193,7 +193,7 @@ class HttpClient {
 		}
 		if (!empty($opts['headers'])) {
 			foreach ($opts['headers'] as $key => $val) {
-				$header = mb_strtolower($key);
+				$header = strtolower($key);
 				$reqHeaders[$header] = $val;
 			}
 		}
