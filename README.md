@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "semalt/http-client": "2.0.0"
+        "semalt/http-client": "2.2.0"
     }
 }
 
