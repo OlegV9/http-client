@@ -137,3 +137,7 @@ $urls = [
 ];
 $http->multiRequest('GET', $urls);
 ```
+
+### License
+
+[MIT](https://opensource.org/licenses/MIT)
