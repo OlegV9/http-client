@@ -2,6 +2,7 @@
 	"name": "olegv9/http-client",
 	"description": "Small cURL wrapper",
 	"type": "library",
+    "license": "MIT",
 	"authors": [
 		{
 			"name": "Oleg V",
