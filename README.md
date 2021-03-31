@@ -1,12 +1,12 @@
-## Установка
+## Installation
 
 ```
 composer require olegv9/http-client
 ```
 
-## Использование
+## Usage
 
-### Подключение:
+### Setup:
 
 ```php
 use HttpClient\HttpClient;
@@ -14,7 +14,7 @@ use HttpClient\HttpClient;
 $http = new HttpClient();
 ```
 
-### HTTP-методы:
+### HTTP-methods:
 
 ```php
 $url = 'https://example.com';
@@ -25,42 +25,42 @@ $response = $http->put($url, ['some' => 'data'])->text();
 $response = $http->delete($url, ['some' => 'data'])->text();
 ```
 
-### Обработка ответа:
+### Response handling:
 
 ```php
-$text	= $http->get($url)->text();	//сырой текст
-$object	= $http->get($url)->json();	//применяется json_decode()
-$array	= $http->get($url)->json(true);	//применяется json_decode(true)
+$text	= $http->get($url)->text();	//raw text
+$object	= $http->get($url)->json();	//json_decode() applied
+$array	= $http->get($url)->json(true);	//json_decode(true) applied
 ```
 
-### Методы:
+### Methods:
 
 ```php
 $res = $http->get($url);
 
-$res->text();	//см.выше
-$res->json();	//см.выше
+$res->text();	//see above
+$res->json();	//see above
 
-//статус код (200, 403 и т.д.)
+//status code (200, 403, etc)
 $httpCode = $res->code();
 
-//ошибка если не удалось послать запрос (нет инета, невалидный адрес и т.д.)
+//sending request error (network failure, invalid URL, etc)
 $error = $res->error();
 
-//последний URL после редиректов (CURLINFO_EFFECTIVE_URL)
+//last URL after redirect chain (CURLINFO_EFFECTIVE_URL)
 $lastUrl = $res->getUrl();
 
-//Заголовок ответа
+//response header
 $header = $res->getHeader('Content-Type');
 
-//Массив всех заголовков ответа
+//all response headers list
 $allHeaders = $res->getAllHeaders();
 
-//время запроса
+//request time
 $time = $res->time();
 ```
 
-### Опции
+### Options
 
 Опции запроса передаются в виде ассоциативного массива во 2-м параметре в GET-запросе и в 3-м - в остальных
 
