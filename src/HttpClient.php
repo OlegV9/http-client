@@ -1,6 +1,6 @@
 <?php
 
-namespace Semalt;
+namespace HttpClient;
 
 class HttpClient {
 	private $defaultOpts = [
