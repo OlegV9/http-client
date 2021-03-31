@@ -1,16 +1,16 @@
 {
-	"name": "semalt/http-client",
+	"name": "olegv9/http-client",
 	"description": "Small cURL wrapper",
 	"type": "library",
 	"authors": [
 		{
 			"name": "Oleg V",
-			"email": "olegv@semalt.com"
+			"email": "olegv0907@gmail.com"
 		}
 	],
 	"autoload": {
 		"psr-4": {
-			"Semalt\\": ["src/"]
+			"HttpClient\\": ["src/"]
 		}
 	}
 }

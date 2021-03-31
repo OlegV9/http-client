@@ -1,6 +1,6 @@
 <?php
 
-namespace Semalt\HttpClient;
+namespace HttpClient\HttpClient;
 
 class Result {
 	private $response = '';
@@ -14,7 +14,7 @@ class Result {
 		$this->headers = $headers;
 		$this->info = $info;
 	}
-	
+
 	public function getRawInfo() {
 		return $this->info;
 	}
